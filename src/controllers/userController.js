@@ -1,4 +1,5 @@
 import User from "../models/User";
+import fetch from "node-fetch";
 import bcrypt from "bcrypt";
 
 export const getJoin = (req,res) => res.render("join", {pageTitle: "Join"});
@@ -89,6 +90,7 @@ export const finishGithubLogin = async (req, res) => {
   });
   const json = await data.json();
   console.log(json);
+  res.send(JSON.stringify(json));
 };
 
 
