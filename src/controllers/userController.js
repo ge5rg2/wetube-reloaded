@@ -195,4 +195,15 @@ export const postChangePassword = async (req, res) => {
   return res.redirect("/users/logout");
 };
 
-export const see = (req, res) => res.send("See User");
+export const see = async (req, res) => {
+  const {id} = req.params;
+  // session에서 찾지 않고 url에서 찾는 이유는 다른 방문자도 볼 수 있도록 하기 위함.
+  const user = await User.findById(id);
+  if (!user) {
+    return res.status(404).render("404", {pageTitle: "User not found"});
+  }
+  return res.render("users/profile", {
+    pageTitle: user.name,
+    user,
+  });
+};
