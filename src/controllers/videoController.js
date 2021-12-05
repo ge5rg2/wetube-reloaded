@@ -7,28 +7,40 @@ export const home = async (req, res) => {
 };
 export const watch = async (req, res) => {
   const { id } = req.params;
-  const video = await Video.findById(id);
-  const owner = await User.findById(video.owner);
+  const video = await Video.findById(id).populate("owner");
+  //populate를 사용하면 owner와 바로 연결 시킬 수 있다
   if (!video) {
     return res.render("404", { pageTitle: "Video not found." });
   }
-  return res.render("watch", { pageTitle: video.title, video, owner });
+  return res.render("watch", { pageTitle: video.title, video });
 };
 export const getEdit = async (req, res) => {
   const { id } = req.params;
+  const {
+    user:{_id},
+  } = req.session;
   const video = await Video.findById(id);
    if (!video) {
      return res.status(404).render("404", { pageTitle: "Video not found." });
+   }
+   if (String(video.owner) !== String(_id)) {
+     return res.status(403).redirect("/");
    }
    return res.render("edit", { pageTitle: `Edit: ${video.title}`, video });
  };
 
  export const postEdit = async (req, res) => {
+  const {
+    user: {_id},
+  } = req.session;
   const { id } = req.params;
   const { title, description, hashtags } = req.body;
-  const video = await Video.exists({ _id: id });
+  const video = await Video.findById(id);
   if (!video) {
     return res.status(404).render("404", { pageTitle: "Video not found." });
+  }
+  if (String(video.owner) !== String(_id)) {
+    return res.status(403).redirect("/");
   }
   await Video.findByIdAndUpdate(id, {
     title,
@@ -49,13 +61,16 @@ export const postUpload = async (req, res) => {
   const { path: fileUrl} = req.file;
   const { title, description, hashtags } = req.body;
   try {
-     await Video.create({
+     const newVideo = await Video.create({
        title,
        description,
        fileUrl,
        owner: _id,
        hashtags: Video.formatHashtags(hashtags),
      });
+     const user = await User.findById(_id);
+     user.videos.push(newVideo._id);
+     user.save();
      return res.redirect("/");
    } catch (error) {
      console.log(error);
@@ -68,7 +83,22 @@ export const postUpload = async (req, res) => {
 
 export const deleteVideo = async (req, res) => {
   const { id } = req.params;
+  const {
+    user: {_id},
+  } = req.session;
+  const video = await Video.findById(id);
+  const user = await User.findById(_id);
+  if (!video) {
+    return res.status(404).render("404", {pageTitle: "Video not found."})
+  }
+  if (String(video.owner) !== String(_id)) {
+    // owner은 object _id는 string 형태기 때문에 !==이 항상 false로 나온다. 그래서 동일한 형태인 string()으로 묶어준 것!
+    return res.status(403).redirect("/");
+  }
   await Video.findByIdAndDelete(id);
+  user.videos.splice(user.videos.indexOf(id),1);
+  // splice배열 값 제거 추가 기능 indexOf는 해당 값에 해당하는 첫번째 값
+  user.save();
   return res.redirect("/");
 };
 
