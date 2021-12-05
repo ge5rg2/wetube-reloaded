@@ -1,0 +1,24 @@
+.empty__message {
+    margin-bottom: 50px;
+    font-size: 18px;
+}
+.video-grid {
+    display: grid;
+    // flex와 또다른 형태의 컨테이너
+    gap: 50px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    // https://studiomeal.com/archives/533 c참고
+}
+.auth-switch {
+    text-align: center;
+    margin-top: 40px;
+    a {
+      text-decoration: underline;
+    }
+}
+ 
+.avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+}
