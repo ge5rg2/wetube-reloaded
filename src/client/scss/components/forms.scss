@@ -10,7 +10,7 @@ form {
     }
 }
 
-input {
+input:not([type="range"]) {
     all: unset;
     //기본속서 초기화
     padding: 15px 20px;
