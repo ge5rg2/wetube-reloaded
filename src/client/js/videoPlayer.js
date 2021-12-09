@@ -127,6 +127,13 @@ const handleMouseLeave = () => {
   }, 3000);
 };
 
+const handleEnded = () => {
+  const {id} = videoContainer.dataset;
+  fetch(`/api/videos/${id}/view`, {
+    method: "POST",
+  });
+};
+
 playBtn.addEventListener("click", handlePlayClick);
 muteBtn.addEventListener("click", handleMuteClick);
 volumeRange.addEventListener("input", handleVolumeChange);
@@ -141,3 +148,4 @@ window.addEventListener("keydown", playKey);
 video.addEventListener("mousemove", handleMouseMove);
 video.addEventListener("mouseleave", handleMouseLeave);
 document.addEventListener("fullscreenchange", autoScreenChange);
+video.addEventListener("ended", handleEnded);
