@@ -16,6 +16,7 @@ const videoControls = document.getElementById("videoControls");
 let controlsTimeout = null;
 let controlsMovementTimeout = null;
 let volumeValue = 0.5;
+let mouseInControls = false;
 video.volume = volumeValue;
 
 const handlePlayClick = (e) => {
@@ -104,9 +105,20 @@ const playKey = (e) => {
     } else if(e.which === 77) {
       handleMuteClick(e);
     }
+    // 방향키로 재생 시간 변경
 };
 
-const hideControls = () => videoControls.classList.remove("showing");
+const handleMouseLeaveInControls = () => {
+  mouseInControls = false;
+}
+
+const handleMouseMoveInControls = () => {
+  mouseInControls = true;
+}
+
+const hideControls = () => {
+    videoControls.classList.remove("showing"); 
+}
 
 const handleMouseMove = () => {
   if (controlsTimeout) {
@@ -117,8 +129,10 @@ const handleMouseMove = () => {
     clearTimeout(controlsMovementTimeout);
     controlsTimeout = null;
   }
+  if(mouseInControls == false) {
+    controlsMovementTimeout = setTimeout(hideControls, 3000);
+  }
   videoControls.classList.add("showing");
-  controlsMovementTimeout = setTimeout(hideControls, 3000);
 };
 
 const handleMouseLeave = () => {
@@ -145,7 +159,10 @@ timeline.addEventListener("input", handleTimelineChange);
 fullScreenBtn.addEventListener("click", handleFullscreen);
 window.addEventListener("keydown", playKey);
 //키보드 이벤트
-video.addEventListener("mousemove", handleMouseMove);
-video.addEventListener("mouseleave", handleMouseLeave);
+videoContainer.addEventListener("mousemove", handleMouseMove);
+videoContainer.addEventListener("mouseleave", handleMouseLeave);
+videoControls.addEventListener("mousemove", handleMouseMoveInControls);
+videoControls.addEventListener("mouseleave", handleMouseLeaveInControls);
+// videoContainer를 중심으로 마우스 이벤트 삽입. videoControls를 중심으로 마우스가 해당 태그에 있을 때 컨트롤바가 사라지지 않게 만들었다.
 document.addEventListener("fullscreenchange", autoScreenChange);
 video.addEventListener("ended", handleEnded);
