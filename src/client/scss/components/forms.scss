@@ -10,7 +10,8 @@ form {
     }
 }
 
-input:not([type="range"]) {
+input:not(input[type="range"]),
+input[type="submit"] {
     all: unset;
     //기본속서 초기화
     padding: 15px 20px;
@@ -30,9 +31,18 @@ input[type="submit"],
  .social__btn {
    border-radius: 5px;
    padding: 12px 20px;
-   background-color: white;
-   color: rgba($color: $red, $alpha: 1);
-   text-align: center;
+   background-color: white !important;
+   color: rgba($color: $red, $alpha: 1) !important;
+   text-align: center !important;
+   // 만약 나중에 설정한 값이 적용되지 않게 하려면 속성값 뒤에 !important를 붙입니다. //
    cursor: pointer;
    display: block;
+   border: none;
+   &:focus {
+     outline: none;
+   }
+   &:disabled {
+     opacity: 0.5;
+     pointer-events: none;
+   }
  }
