@@ -10,6 +10,7 @@ import videoRouter from "./routers/videoRouter";
 import userRouter from "./routers/userRouter";
 import apiRouter from "./routers/apiRouter";
 import { localsMiddleware } from "./middlewares";
+import flash from "express-flash";
 
 const app = express();
 const logger = morgan("dev");
@@ -32,7 +33,7 @@ app.use(
       store:MongoStore.create({mongoUrl: process.env.DB_URL }),
     })
 );
-
+app.use(flash());
 app.use(localsMiddleware);
 app.use("/uploads", express.static("uploads"));
 app.use("/static", express.static("assets"));
