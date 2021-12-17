@@ -70,7 +70,7 @@ const handleDownload = async () => {
 
 const handleStart = async () => {
     stream = await navigator.mediaDevices.getUserMedia({
-        audio: false,
+        audio: true,
         video: true
       });
     video.srcObject = stream;

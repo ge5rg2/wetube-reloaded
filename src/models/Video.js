@@ -10,6 +10,9 @@ import mongoose from "mongoose";
    meta: {
     views: { type: Number, default: 0, required: true },
    },
+   comments: [
+    { type: mongoose.Schema.Types.ObjectId, ref: "Comment" },
+  ],
    owner: {type: mongoose.Schema.Types.ObjectId, required: true, ref: "User"},
    // 중요하니까 복습할 것
  });
