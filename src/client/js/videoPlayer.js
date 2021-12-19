@@ -106,6 +106,7 @@ const playKey = (e) => {
       handleMuteClick(e);
     }
     // 방향키로 재생 시간 변경
+    //댓글 작성 시 f 기능 삭제 만들어야 한다.
 };
 
 const handleMouseLeaveInControls = () => {
