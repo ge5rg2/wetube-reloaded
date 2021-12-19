@@ -152,5 +152,16 @@ export const createComment = async (req, res) => {
   });
   video.comments.push(comment._id);
   video.save();
-  return res.sendStatus(201);
+  return res.status(201).json({ newCommentId: comment._id });
+};
+
+export const deleteComment = async (req, res) => {
+  const {id} = req.params;
+  const comment = await Comment.findById(id);
+  if (String(comment._id)) {
+    await Comment.findByIdAndDelete(id);
+  } else {
+    res.sendStatus(404);
+  }
+  //영상 업로더도 댓글 삭제할 수 있도록 만들었다
 };

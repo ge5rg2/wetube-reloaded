@@ -1,17 +1,26 @@
 const videoContainer = document.getElementById("videoContainer");
 const form = document.getElementById("commentForm");
+const deleteCommentBtn = document.querySelectorAll(".deleteComment");
+// 같은 class를 가지고 있는 태그를 지정할 때 all! 그리고 event는 foreach를 사용
 
-const addComment = (text) => {
-    const videoComments = document.querySelector(".video__comments ul");
-    const newComment = document.createElement("li");
-    newComment.className = "video__comment";
-    const icon = document.createElement("i");
-    icon.className = "fas fa-comment";
-    const span = document.createElement("span");
-    span.innerText = ` ${text}`;
-    newComment.appendChild(icon);
-    newComment.appendChild(span);
-    videoComments.prepend(newComment);
+const addComment = (text, id) => {
+  const videoComments = document.querySelector(".video__comments ul");
+  const newComment = document.createElement("li");
+  newComment.dataset.id = id;
+  newComment.className = "video__comment";
+  const icon = document.createElement("i");
+  icon.className = "fas fa-comment";
+  const span = document.createElement("span");
+  span.innerText = ` ${text}`;
+  const span2 = document.createElement("span");
+  span2.innerText = "❌";
+  span2.className = "deleteComment";
+  newComment.appendChild(icon);
+  newComment.appendChild(span);
+  newComment.appendChild(span2);
+  videoComments.prepend(newComment);
+  newComment.addEventListener("click", handleDeleteComment);
+  // 새로 작성한 댓글 즉시 삭제시 필요한 이벤트
 };
 
 const handleSubmit = async (event) => {
@@ -22,24 +31,41 @@ const handleSubmit = async (event) => {
   if (text === "") {
     return;
   }
-  const { status } = await fetch(`/api/videos/${videoId}/comment`, {
+  const response = await fetch(`/api/videos/${videoId}/comment`, {
     method: "POST",
     headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ text }),
   });
-  textarea.value = "";
-  if (status === 201) {
-    addComment(text);
+  if (response.status === 201) {
+    textarea.value = "";
+    const { newCommentId } = await response.json();
+    addComment(text, newCommentId);
   }
 };
+
+const handleDeleteComment = async (event) => {
+  const {
+    target: { parentElement: deleteComment},
+  } = event;
+  const {
+    dataset: { id },
+  } = deleteComment;
+  deleteComment.remove();
+  await fetch(`/api/comment/${id}/delete`, {
+    method: "DELETE",
+  });
+}
+
 
 if (form) {
     form.addEventListener("submit", handleSubmit);
 } // loggedIn이 아니라면 form이 없기 때문에 오류가 난다
 
-// 삭제 기능 만들어주기 
+deleteCommentBtn.forEach((btn) => {
+  btn.addEventListener("click", handleDeleteComment);
+});
 
 /*(BIG 중요 포인트) 요약:
 1. fetch로 백엔드에 요청을 보낼 때에
