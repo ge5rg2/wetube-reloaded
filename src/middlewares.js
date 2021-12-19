@@ -1,4 +1,20 @@
 import multer from "multer";
+import multerS3 from "multer-s3";
+import aws from "aws-sdk";
+
+const s3 = new aws.S3({
+  credentials: {
+    accessKeyId: process.env.AWS_ID,
+    secretAccessKey: process.env.AWS_SECRET,
+  }
+})
+
+const multerUploader = multerS3({
+  s3: s3,
+  bucket: "wetube-reloaded-george",
+  acl: "public-read"
+})
+// 위에 두개는 기존 컴퓨터에 저장하는 파일을 aws s3에 저장할 수 있게끔 만들어주는 역할
 
 export const localsMiddleware = (req, res, next) => {
     res.locals.loggedIn = Boolean(req.session.loggedIn);
@@ -30,6 +46,7 @@ export const avatarUpload = multer({
   limits: {
     fileSize: 10000000,
   },
+  storage: multerUploader,
 });
 
 export const videoUpload = multer({
@@ -37,4 +54,5 @@ export const videoUpload = multer({
   limits: {
     fileSize: 1000000000,
   },
+  storage: multerUploader,
 });
