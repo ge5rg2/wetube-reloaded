@@ -6,15 +6,15 @@ const s3 = new aws.S3({
   credentials: {
     accessKeyId: process.env.AWS_ID,
     secretAccessKey: process.env.AWS_SECRET,
-  }
-})
+  };
+});
 
 const multerUploader = multerS3({
   s3: s3,
-  bucket: "wetube-reloaded-george",
+  bucket: 'wetube-reloaded-george',
   acl: "public-read",
   contentType: multerS3.AUTO_CONTENT_TYPE
-})
+});
 // 위에 두개는 기존 컴퓨터에 저장하는 파일을 aws s3에 저장할 수 있게끔 만들어주는 역할
 
 export const localsMiddleware = (req, res, next) => {
